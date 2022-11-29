@@ -6,15 +6,20 @@ export const medShowSlide = createSlice({
     value:{
         isShow: false,
         type: "view",
+        medItem: null,
     }
   },
   reducers: {
     show: (state, action) => {
       state.value.isShow = true;
-      state.value.type = action.payload;
+      state.value = {
+        ...state.value,
+        ...action.payload
+      };
     },
     hide: (state) => {
       state.value.isShow = false;
+      state.value.medItem = null;
     },
   },
 });

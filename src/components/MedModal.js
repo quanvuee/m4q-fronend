@@ -1,29 +1,177 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import { hide, selectMedShow } from './medShowSlice';
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Form,
+  FormControl,
+  Modal,
+  Col,
+  Stack,
+  Row,
+  Container,
+} from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { hide, selectMedShow } from "./medShowSlice";
+import ReactDatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import vi from "date-fns/locale/vi";
+import { BsFillPlusCircleFill, BsDashCircle } from "react-icons/bs";
+
+registerLocale("vi", vi);
+
+const AddSymptomRow = ({
+  symptom,
+  sympIndex,
+  onEdit,
+  mode,
+  onRemove,
+  onAdd,
+}) => {
+  const [sympText, setSympText] = useState("");
+  useEffect(() => {
+    if (symptom) setSympText(symptom);
+  }, []);
+
+  const onChangeSymptom = (event) => {
+    setSympText(event.target.value);
+    if (mode == "edit") {
+      onEdit(sympIndex, sympText);
+    }
+  };
+  const onClickRemove = () => {
+    onRemove(sympIndex);
+  };
+  const onClickAdd = () => {
+    if (sympText) {
+      onAdd(sympText);
+      setSympText('')
+    }
+  };
+  return (
+    <Row
+      style={{
+        width: "100%",
+        marginLeft: 0,
+        marginRight: 0,
+        marginTop: 2,
+        marginBottom: 2,
+      }}
+    >
+      {mode == "view" ? (
+        <Col style={{ paddingLeft: 0, paddingRight: 0 }}>
+          <Form.Control value={sympText} onChange={onChangeSymptom} readOnly />
+        </Col>
+      ) : (
+        <Col xs={10} style={{ paddingLeft: 0, paddingRight: 0 }}>
+          <Form.Control value={sympText} onChange={onChangeSymptom} />
+        </Col>
+      )}
+
+      {mode != "view" ? (
+        <Col xs={2} style={{ padding: 0 }}>
+          {mode == "add" ? (
+            <Button className="float-end" onClick={onClickAdd}>
+              <BsFillPlusCircleFill />
+            </Button>
+          ) : (
+            <Button className="float-end" onClick={onClickRemove}>
+              <BsDashCircle />
+            </Button>
+          )}
+        </Col>
+      ) : null}
+    </Row>
+  );
+};
 
 export default () => {
-    const show = useSelector(selectMedShow);
-    const dispatch = useDispatch();
-    const [title,setTitle] = useState();
-    useEffect(() => {
-        if (show.type === "add") {
-            setTitle("Thêm bản ghi");
-        } else if (show.type === "view") {
-            setTitle("Chi tiết");
-        } else if (show.type === "update") {
-            setTitle("Chỉnh sửa");
-        }
-    })
-    return <Modal show={show.isShow} onHide={() => dispatch(hide())}>
-        <Modal.Header closeButton>
-            <Modal.Title>{title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>This is a demo</Modal.Body>
-        <Modal.Footer>
-            <Button variant="secondary" onClick={() => dispatch(hide())}>Đóng</Button>
-            <Button variant="primary" onClick={() => dispatch(hide())}>Lưu</Button>
-        </Modal.Footer>
+  const show = useSelector(selectMedShow);
+  const dispatch = useDispatch();
+  const [title, setTitle] = useState();
+  const [startDate, setStartDate] = useState(new Date());
+  const [medItem, setMedItem] = useState({});
+
+  useEffect(() => {
+    if (show.type === "add") {
+      setTitle("Thêm bản ghi");
+    } else if (show.type === "view") {
+      setTitle("Chi tiết");
+    } else if (show.type === "edit") {
+      setTitle("Chỉnh sửa");
+    }
+    setMedItem({ ...show.medItem });
+  }, [show]);
+
+  const hideModal = () => {
+    setMedItem({});
+    dispatch(hide());
+  };
+
+  const handleEditSymptom = (sympIndex, symptom) => {
+    const symptoms = [...medItem.symptoms];
+    symptoms[sympIndex] = symptom;
+    setMedItem({ ...medItem, symptoms: [...symptoms] });
+  };
+  const handleAddSymptom = (symptom) => {
+    const symptoms = [...medItem.symptoms];
+    setMedItem({ ...medItem, symptoms: [...symptoms, symptom] });
+  };
+  const handleRemoveSymptom = (sympIndex)=>{
+    const symptoms = [...medItem.symptoms];
+    symptoms.splice(sympIndex);
+    setMedItem({ ...medItem, symptoms: [...symptoms] });
+  }
+  return (
+    <Modal show={show.isShow} onHide={hideModal}>
+      <Modal.Header closeButton>
+        <Modal.Title>{title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          <Form.Group>
+            <Form.Label>Triệu chứng</Form.Label>
+            {medItem.symptoms
+              ? medItem.symptoms.map((symptom, index) => (
+                  <AddSymptomRow
+                    symptom={symptom}
+                    key={index}
+                    sympIndex={index}
+                    onEdit={handleEditSymptom}
+                    onRemove={handleRemoveSymptom}
+                    mode={
+                      show.type == "view"
+                        ? "view"
+                        : show.type == "add" || show.type == "edit"
+                        ? "edit"
+                        : ""
+                    }
+                  />
+                ))
+              : null}
+            <AddSymptomRow mode={"add"} onAdd={handleAddSymptom}/>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Kết luận</Form.Label>
+            <Form.Control />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Thời gian</Form.Label>
+            <ReactDatePicker
+              className="form-control"
+              locale={"vi"}
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+            />
+          </Form.Group>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={hideModal}>
+          Đóng
+        </Button>
+        <Button variant="primary" onClick={hideModal}>
+          Lưu
+        </Button>
+      </Modal.Footer>
     </Modal>
-}
+  );
+};

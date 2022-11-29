@@ -43,24 +43,37 @@ export function CardItem({ item }) {
       <Card.Header>
         <Container>
           <Row>
-            <Col className="text-left"><strong>{item.conclusion}</strong></Col>
-            <Col className="text-right">{dateStr}</Col>
+            <Col className="text-start">
+              <strong>{item.conclusion}</strong>
+            </Col>
+            <Col className="text-end">{dateStr}</Col>
           </Row>
         </Container>
       </Card.Header>
 
       <Card.Body>
-        <Container fluid style={{padding:0}}>
-          {/* <Row>
-            <Col> */}
-              <Card.Text><strong>Triệu chứng:</strong> {symptomStr} <br/> <strong>Điều trị:</strong> {treatmentStr}</Card.Text>
-            {/* </Col>
-            <Col xs="auto"> */}
-              <Button variant="primary" className="float-right" onClick={()=> dispatch(show('view'))}>
-                Chi tiết
-              </Button>
-            {/* </Col>
-          </Row> */}
+        <Container fluid style={{ padding: 0 }}>
+          <Card.Text>
+            <strong>Triệu chứng:</strong> {symptomStr} <br />{" "}
+            <strong>Điều trị:</strong> {treatmentStr}
+          </Card.Text>
+          <Stack direction="horizontal" gap={3}>
+            <Button
+              variant="primary"
+              // className="float-start"
+              onClick={() => dispatch(show({ type: "edit", medItem: item }))}
+            >
+              Sửa
+            </Button>
+            <Button
+              variant="primary"
+              className="ms-auto"
+              // className="float-end"
+              onClick={() => dispatch(show({ type: "view", medItem: item }))}
+            >
+              Chi tiết
+            </Button>
+          </Stack>
         </Container>
       </Card.Body>
     </Card>

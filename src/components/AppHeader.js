@@ -9,7 +9,7 @@ function AppHeader() {
   return (
     <Container fluid className="mt-2">
       <Button>Lọc</Button>
-      <Button className="float-right" onClick={() => dispatch(show("add"))}>
+      <Button className="float-end" onClick={() => dispatch(show({type:"add"}))}>
         Thêm
       </Button>
     </Container>
