@@ -43,7 +43,7 @@ const AddSymptomRow = ({
   const onClickAdd = () => {
     if (sympText) {
       onAdd(sympText);
-      setSympText('')
+      setSympText("");
     }
   };
   return (
@@ -83,6 +83,13 @@ const AddSymptomRow = ({
   );
 };
 
+var symptomCnt = 0;
+const addSymptomId = (symptom) =>{
+  return {
+    text:symptom,
+    id: ++ symptomCnt
+  }
+}
 export default () => {
   const show = useSelector(selectMedShow);
   const dispatch = useDispatch();
@@ -98,7 +105,16 @@ export default () => {
     } else if (show.type === "edit") {
       setTitle("Chỉnh sửa");
     }
-    setMedItem({ ...show.medItem });
+    const newMedItem = { ...show.medItem };
+    if (newMedItem.symptoms) {
+      const symptompsWithId = newMedItem.symptoms.map(sympE => {
+        return addSymptomId(sympE);
+      });
+      newMedItem.symptoms = symptompsWithId;
+    }
+    setMedItem(newMedItem);
+ 
+    // console.log(medItem.symptoms)
   }, [show]);
 
   const hideModal = () => {
@@ -112,14 +128,20 @@ export default () => {
     setMedItem({ ...medItem, symptoms: [...symptoms] });
   };
   const handleAddSymptom = (symptom) => {
-    const symptoms = [...medItem.symptoms];
-    setMedItem({ ...medItem, symptoms: [...symptoms, symptom] });
+    setMedItem(
+      medItem.symptoms
+        ? { ...medItem, symptoms: [...medItem.symptoms, addSymptomId(symptom)] }
+        : { ...medItem, symptoms: [addSymptomId(symptom)] }
+    );
   };
-  const handleRemoveSymptom = (sympIndex)=>{
-    const symptoms = [...medItem.symptoms];
-    symptoms.splice(sympIndex);
-    setMedItem({ ...medItem, symptoms: [...symptoms] });
-  }
+  const handleRemoveSymptom = (sympIndex) => {
+    setMedItem({
+      ...medItem,
+      symptoms: [
+        ...medItem.symptoms.filter((sympItem, index) => index !== sympIndex),
+      ],
+    });
+  };
   return (
     <Modal show={show.isShow} onHide={hideModal}>
       <Modal.Header closeButton>
@@ -132,8 +154,8 @@ export default () => {
             {medItem.symptoms
               ? medItem.symptoms.map((symptom, index) => (
                   <AddSymptomRow
-                    symptom={symptom}
-                    key={index}
+                    symptom={symptom.text}
+                    key={symptom.id}
                     sympIndex={index}
                     onEdit={handleEditSymptom}
                     onRemove={handleRemoveSymptom}
@@ -147,7 +169,9 @@ export default () => {
                   />
                 ))
               : null}
-            <AddSymptomRow mode={"add"} onAdd={handleAddSymptom}/>
+            {show.type != "view" ? (
+              <AddSymptomRow mode={"add"} onAdd={handleAddSymptom} />
+            ) : null}
           </Form.Group>
           <Form.Group>
             <Form.Label>Kết luận</Form.Label>
@@ -165,12 +189,24 @@ export default () => {
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={hideModal}>
-          Đóng
-        </Button>
-        <Button variant="primary" onClick={hideModal}>
-          Lưu
-        </Button>
+        {show.type == "view" ? (
+          <Button variant="secondary" onClick={hideModal}>
+            Đóng
+          </Button>
+        ) : (
+          <>
+            <Button
+              variant="secondary"
+              className="float-start me-auto"
+              onClick={hideModal}
+            >
+              Hủy
+            </Button>
+            <Button variant="primary" onClick={hideModal}>
+              Lưu
+            </Button>
+          </>
+        )}
       </Modal.Footer>
     </Modal>
   );
