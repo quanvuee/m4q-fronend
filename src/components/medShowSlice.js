@@ -29,3 +29,9 @@ export const { show, hide } = medShowSlide.actions;
 export const selectMedShow = (state) => state.medShow.value;
 
 export default medShowSlide.reducer;
+
+export const MedShowMode = {
+  VIEW:'view',
+  EDIT:'edit',
+  ADD:'add'
+}

@@ -10,7 +10,7 @@ import {
   Stack,
 } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import { show } from "./medShowSlice";
+import { MedShowMode, show } from "./medShowSlice";
 
 export function CardItem({ item }) {
   const dispatch = useDispatch();
@@ -61,7 +61,7 @@ export function CardItem({ item }) {
             <Button
               variant="primary"
               // className="float-start"
-              onClick={() => dispatch(show({ type: "edit", medItem: item }))}
+              onClick={() => dispatch(show({ type: MedShowMode.EDIT, medItem: item }))}
             >
               Sửa
             </Button>
@@ -69,7 +69,7 @@ export function CardItem({ item }) {
               variant="primary"
               className="ms-auto"
               // className="float-end"
-              onClick={() => dispatch(show({ type: "view", medItem: item }))}
+              onClick={() => dispatch(show({ type: MedShowMode.VIEW, medItem: item }))}
             >
               Chi tiết
             </Button>
