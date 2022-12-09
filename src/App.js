@@ -1,21 +1,41 @@
 import React from "react";
 
 import logo from "./logo.svg";
-import { Counter } from "./features/counter/Counter";
 import "./App.css";
-import { CardList } from "./components/CardList";
+import { CardList } from "./components/medications/CardList";
 import { Container } from "react-bootstrap";
 import AppHeader from "./components/AppHeader";
-import MedModal from "./components/MedModal";
+import { MedAdd, MedEdit, MedView } from "./components/medDetail/MedDetail";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
-function App() {
+const Root = () => {
   return (
-    <Container fluid style={{padding:0}}>
+    <>
       <AppHeader />
       <CardList />
-      <MedModal />
-    </Container>
+    </>
   );
+};
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Root />,
+  },
+  {
+    path: "medication/:medId",
+    element: <MedView />,
+  },
+  {
+    path: "medication/:medId/edit",
+    element: <MedEdit />,
+  },
+  {
+    path: "medication/add",
+    element: <MedAdd />,
+  },
+]);
+function App() {
+  return <RouterProvider router={router} />;
 }
 
 export default App;

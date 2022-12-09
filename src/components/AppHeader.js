@@ -1,18 +1,19 @@
 import React, { useState } from "react";
-import { Button, Container } from "react-bootstrap";
+import { Button, Container, Stack } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import { MedShowMode, show } from "./medShowSlice";
+import { Form, Link } from "react-router-dom";
+import { MedShowMode, show } from "./medDetail/medShowSlice";
 
 function AppHeader() {
   const dispatch = useDispatch();
 
   return (
-    <Container fluid className="mt-2">
+    <Stack direction="horizontal"  >
       <Button>Lọc</Button>
-      <Button className="float-end" onClick={() => dispatch(show({type:MedShowMode.ADD}))}>
-        Thêm
-      </Button>
-    </Container>
+      <Form action="medication/add" className="ms-auto">
+        <Button type="submit">Thêm</Button>
+      </Form>
+    </Stack>
   );
 }
 

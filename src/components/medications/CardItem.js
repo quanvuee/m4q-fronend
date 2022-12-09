@@ -1,16 +1,8 @@
 import React from "react";
-import {
-  Button,
-  Card,
-  Col,
-  Container,
-  ListGroup,
-  ListGroupItem,
-  Row,
-  Stack,
-} from "react-bootstrap";
+import { Button, Card, Col, Container, Row, Stack } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import { MedShowMode, show } from "./medShowSlice";
+import { Link } from "react-router-dom";
+import { MedShowMode, show } from "../medDetail/medShowSlice";
 
 export function CardItem({ item }) {
   const dispatch = useDispatch();
@@ -25,18 +17,24 @@ export function CardItem({ item }) {
       symptomStr += ".";
     }
   });
-  item.treatment.forEach((treatmentItem) => {
-    treatmentStr += treatmentItem.method + " (";
-    treatmentItem.medicine.forEach((medicineItem, index) => {
-      treatmentStr += medicineItem.name;
-      if (
-        index < treatmentItem.medicine.length - 1 &&
-        treatmentItem.medicine.length > 1
-      ) {
-        treatmentStr += ", ";
-      }
-    });
-    treatmentStr += ") ";
+  let currentMethod = "";
+  item.treatment.forEach((treatmentItem, treatmentIdx) => {
+    if (treatmentItem.method !== currentMethod) {
+      treatmentStr += treatmentItem.method + " (";
+      currentMethod = treatmentItem.method;
+    }
+    treatmentStr += treatmentItem.name;
+    if (
+      treatmentIdx < item.treatment.length - 1 &&
+      treatmentItem.method === item.treatment[treatmentIdx + 1].method
+    ) {
+      treatmentStr += ", ";
+    } else if (
+      treatmentIdx === item.treatment.length - 1 ||
+      treatmentItem.method !== item.treatment[treatmentIdx + 1].method
+    ) {
+      treatmentStr += ") ";
+    }
   });
   return (
     <Card>
@@ -58,21 +56,13 @@ export function CardItem({ item }) {
             <strong>Điều trị:</strong> {treatmentStr}
           </Card.Text>
           <Stack direction="horizontal" gap={3}>
-            <Button
-              variant="primary"
-              // className="float-start"
-              onClick={() => dispatch(show({ type: MedShowMode.EDIT, medItem: item }))}
-            >
-              Sửa
-            </Button>
-            <Button
-              variant="primary"
-              className="ms-auto"
-              // className="float-end"
-              onClick={() => dispatch(show({ type: MedShowMode.VIEW, medItem: item }))}
-            >
-              Chi tiết
-            </Button>
+            <Link to={`medication/${item._id}/edit`}>
+              <Button variant="primary">Sửa</Button>
+            </Link>
+
+            <Link to={`medication/${item._id}`} className="ms-auto">
+              <Button variant="primary">Chi tiết</Button>
+            </Link>
           </Stack>
         </Container>
       </Card.Body>

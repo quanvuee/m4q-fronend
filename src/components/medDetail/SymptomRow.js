@@ -1,5 +1,5 @@
 import React,{ useEffect, useState }  from 'react';
-import { BsFillPlusCircleFill, BsDashCircle } from "react-icons/bs";
+import { BsPlusLg, BsDashLg } from "react-icons/bs";
 import {
     Button,
     Form,
@@ -59,11 +59,11 @@ export default ({
           <Col xs={2} style={{ padding: 0 }}>
             {mode == "add" ? (
               <Button className="float-end" onClick={onClickAdd}>
-                <BsFillPlusCircleFill />
+                <BsPlusLg />
               </Button>
             ) : (
               <Button className="float-end" onClick={onClickRemove}>
-                <BsDashCircle />
+                <BsDashLg />
               </Button>
             )}
           </Col>
